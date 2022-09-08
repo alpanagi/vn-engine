@@ -23,7 +23,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 color: Color::WHITE,
             },
         )
-        .with_text_alignment(TextAlignment::TOP_CENTER)
         .with_style(Style {
             align_self: AlignSelf::FlexStart,
             position_type: PositionType::Absolute,
