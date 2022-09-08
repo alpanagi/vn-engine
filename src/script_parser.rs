@@ -41,6 +41,7 @@ fn string_state(ch: char, current_stack: &mut String, commands: &mut Vec<Command
             commands.push(Command::Text {
                 text: current_stack.clone(),
             });
+            current_stack.clear();
             return ParserState::Start;
         }
         _ => {

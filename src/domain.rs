@@ -4,12 +4,14 @@ use bevy::reflect::TypeUuid;
 pub struct GameState {
     pub unparsed_scripts: Vec<Handle<Script>>,
     pub commands: Vec<Command>,
+    pub current_command: usize,
 }
 impl Default for GameState {
     fn default() -> Self {
         GameState {
             unparsed_scripts: vec![],
             commands: vec![],
+            current_command: 0,
         }
     }
 }
@@ -20,7 +22,7 @@ pub struct Script {
     pub content: String,
 }
 
-#[derive(Debug)]
+#[derive(Clone)]
 pub enum Command {
     Text { text: String },
 }
