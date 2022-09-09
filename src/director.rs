@@ -23,6 +23,10 @@ fn director(
     mut ev_text: EventWriter<TextEvent>,
     mut game_state: ResMut<GameState>,
 ) {
+    if game_state.commands.len() == 0 {
+        return;
+    }
+
     for _ in ev_forward.iter() {
         if game_state.current_command < game_state.commands.len() - 1 {
             game_state.current_command += 1;
@@ -37,7 +41,10 @@ fn director(
 
     if let Some(command) = game_state.commands.get(game_state.current_command) {
         match command {
-            Command::Text { text } => ev_text.send(TextEvent { text: text.clone() }),
+            Command::Text { speaker, text } => ev_text.send(TextEvent {
+                speaker: speaker.clone(),
+                text: text.clone(),
+            }),
         }
     }
 }
