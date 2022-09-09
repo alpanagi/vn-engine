@@ -2,8 +2,8 @@ mod director;
 mod domain;
 mod game_loader;
 mod input;
-mod interpreter;
 mod script_loader;
+mod script_parser;
 mod text;
 
 use bevy::prelude::*;

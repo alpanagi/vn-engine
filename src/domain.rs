@@ -2,14 +2,14 @@ use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
 
 pub struct GameState {
-    pub unprocessed_scripts: Vec<Handle<Script>>,
+    pub unparsed_scripts: Vec<Handle<Script>>,
     pub commands: Vec<Command>,
     pub current_command: usize,
 }
 impl Default for GameState {
     fn default() -> Self {
         GameState {
-            unprocessed_scripts: vec![],
+            unparsed_scripts: vec![],
             commands: vec![],
             current_command: 0,
         }
@@ -24,8 +24,5 @@ pub struct Script {
 
 #[derive(Clone)]
 pub enum Command {
-    Text {
-        speaker: Option<String>,
-        text: String,
-    },
+    Text { text: String },
 }
