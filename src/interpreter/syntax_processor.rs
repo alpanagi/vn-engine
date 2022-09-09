@@ -4,7 +4,7 @@ use super::tokenizer::Token;
 
 pub fn parse_commands(tokens: Vec<Token>) -> Vec<Command> {
     let mut queue: Vec<Token> = tokens.clone();
-    let mut commands = vec![];
+    let mut commands = vec![Command::NoOp];
 
     while queue.len() > 0 {
         match &queue[..] {
@@ -21,6 +21,16 @@ pub fn parse_commands(tokens: Vec<Token>) -> Vec<Command> {
                     text: text.to_owned(),
                 });
                 queue = queue[2..].to_vec()
+            }
+            [Token::Symbol(command), Token::Symbol(target), ..] => {
+                if command == "background" {
+                    commands.push(Command::DisplayBackground {
+                        image: target.clone(),
+                    })
+                } else {
+                    panic!("Syntax error");
+                }
+                queue = queue[2..].to_vec();
             }
             [Token::NewLine, ..] => queue = queue[1..].to_vec(),
             [..] => {

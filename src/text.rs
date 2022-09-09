@@ -36,7 +36,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 align_self: AlignSelf::FlexStart,
                 position_type: PositionType::Absolute,
                 position: UiRect {
-                    bottom: Val::Px(150.0),
+                    bottom: Val::Px(130.0),
                     left: Val::Px(15.0),
                     ..default()
                 },
@@ -59,7 +59,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 align_self: AlignSelf::FlexStart,
                 position_type: PositionType::Absolute,
                 position: UiRect {
-                    bottom: Val::Px(120.0),
+                    bottom: Val::Px(100.0),
                     left: Val::Px(15.0),
                     ..default()
                 },

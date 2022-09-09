@@ -1,12 +1,14 @@
 #[derive(Clone, PartialEq)]
 pub enum Token {
     Text(String),
+    Symbol(String),
     NewLine,
 }
 
 enum ParserState {
     Start,
     String,
+    Symbol,
 }
 
 pub fn parse(text: &str) -> Vec<Token> {
@@ -18,6 +20,7 @@ pub fn parse(text: &str) -> Vec<Token> {
         parser_state = match parser_state {
             ParserState::Start => start_state(ch, &mut current_stack, &mut tokens),
             ParserState::String => string_state(ch, &mut current_stack, &mut tokens),
+            ParserState::Symbol => symbol_state(ch, &mut current_stack, &mut tokens),
         }
     }
 
@@ -30,7 +33,7 @@ pub fn parse(text: &str) -> Vec<Token> {
     tokens
 }
 
-fn start_state(ch: char, _current_stack: &mut String, tokens: &mut Vec<Token>) -> ParserState {
+fn start_state(ch: char, current_stack: &mut String, tokens: &mut Vec<Token>) -> ParserState {
     match ch {
         '"' => {
             return ParserState::String;
@@ -40,10 +43,13 @@ fn start_state(ch: char, _current_stack: &mut String, tokens: &mut Vec<Token>) -
             return ParserState::Start;
         }
         _ => {
-            if !ch.is_whitespace() {
-                panic!("Parser error");
-            } else {
+            if ch.is_whitespace() {
                 return ParserState::Start;
+            } else if ch.is_alphabetic() {
+                current_stack.push(ch);
+                return ParserState::Symbol;
+            } else {
+                panic!("Parser error");
             }
         }
     }
@@ -60,5 +66,23 @@ fn string_state(ch: char, current_stack: &mut String, tokens: &mut Vec<Token>) -
             current_stack.push(ch);
             return ParserState::String;
         }
+    }
+}
+
+fn symbol_state(ch: char, current_stack: &mut String, tokens: &mut Vec<Token>) -> ParserState {
+    if ch.is_alphanumeric() || ch == '_' || ch == '.' {
+        current_stack.push(ch);
+        return ParserState::Symbol;
+    } else if ch == '\n' {
+        tokens.push(Token::Symbol(current_stack.clone()));
+        tokens.push(Token::NewLine);
+        current_stack.clear();
+        return ParserState::Start;
+    } else if ch.is_whitespace() {
+        tokens.push(Token::Symbol(current_stack.clone()));
+        current_stack.clear();
+        return ParserState::Start;
+    } else {
+        panic!("Invalid character");
     }
 }
