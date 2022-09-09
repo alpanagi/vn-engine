@@ -1,3 +1,4 @@
+mod background;
 mod director;
 mod domain;
 mod game_loader;
@@ -6,6 +7,7 @@ mod interpreter;
 mod script_loader;
 mod text;
 
+use background::BackgroundPlugin;
 use bevy::prelude::*;
 use director::DirectorPlugin;
 use domain::{GameState, Script};
@@ -34,6 +36,7 @@ fn main() {
         .add_plugin(GameLoaderPlugin)
         .add_plugin(DirectorPlugin)
         .add_plugin(TextPlugin)
+        .add_plugin(BackgroundPlugin)
         .add_plugin(InputPlugin)
         .add_startup_system(setup)
         .run();

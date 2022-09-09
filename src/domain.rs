@@ -24,8 +24,12 @@ pub struct Script {
 
 #[derive(Clone)]
 pub enum Command {
+    NoOp,
     Text {
         speaker: Option<String>,
         text: String,
+    },
+    DisplayBackground {
+        image: String,
     },
 }
