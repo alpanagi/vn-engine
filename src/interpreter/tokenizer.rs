@@ -1,3 +1,9 @@
+enum State {
+    Start,
+    String,
+    Symbol,
+}
+
 #[derive(Clone, PartialEq)]
 pub enum Token {
     Text(String),
@@ -5,22 +11,16 @@ pub enum Token {
     NewLine,
 }
 
-enum ParserState {
-    Start,
-    String,
-    Symbol,
-}
-
-pub fn parse(text: &str) -> Vec<Token> {
+pub fn generate_tokens(text: &str) -> Vec<Token> {
     let mut tokens: Vec<Token> = vec![];
-    let mut parser_state = ParserState::Start;
-    let mut current_stack = "".to_string();
+    let mut parser_state = State::Start;
+    let mut current_stack = String::new();
 
     for ch in text.chars() {
         parser_state = match parser_state {
-            ParserState::Start => start_state(ch, &mut current_stack, &mut tokens),
-            ParserState::String => string_state(ch, &mut current_stack, &mut tokens),
-            ParserState::Symbol => symbol_state(ch, &mut current_stack, &mut tokens),
+            State::Start => start_state(ch, &mut current_stack, &mut tokens),
+            State::String => string_state(ch, &mut current_stack, &mut tokens),
+            State::Symbol => symbol_state(ch, &mut current_stack, &mut tokens),
         }
     }
 
@@ -33,56 +33,56 @@ pub fn parse(text: &str) -> Vec<Token> {
     tokens
 }
 
-fn start_state(ch: char, current_stack: &mut String, tokens: &mut Vec<Token>) -> ParserState {
+fn start_state(ch: char, current_stack: &mut String, tokens: &mut Vec<Token>) -> State {
     match ch {
         '"' => {
-            return ParserState::String;
+            return State::String;
         }
         '\n' => {
             tokens.push(Token::NewLine);
-            return ParserState::Start;
+            return State::Start;
         }
         _ => {
             if ch.is_whitespace() {
-                return ParserState::Start;
+                return State::Start;
             } else if ch.is_alphabetic() {
                 current_stack.push(ch);
-                return ParserState::Symbol;
+                return State::Symbol;
             } else {
-                panic!("Parser error");
+                panic!("Tokenizer error");
             }
         }
     }
 }
 
-fn string_state(ch: char, current_stack: &mut String, tokens: &mut Vec<Token>) -> ParserState {
+fn string_state(ch: char, current_stack: &mut String, tokens: &mut Vec<Token>) -> State {
     match ch {
         '"' => {
             tokens.push(Token::Text(current_stack.clone()));
             current_stack.clear();
-            return ParserState::Start;
+            return State::Start;
         }
         _ => {
             current_stack.push(ch);
-            return ParserState::String;
+            return State::String;
         }
     }
 }
 
-fn symbol_state(ch: char, current_stack: &mut String, tokens: &mut Vec<Token>) -> ParserState {
+fn symbol_state(ch: char, current_stack: &mut String, tokens: &mut Vec<Token>) -> State {
     if ch.is_alphanumeric() || ch == '_' || ch == '.' {
         current_stack.push(ch);
-        return ParserState::Symbol;
+        return State::Symbol;
     } else if ch == '\n' {
         tokens.push(Token::Symbol(current_stack.clone()));
         tokens.push(Token::NewLine);
         current_stack.clear();
-        return ParserState::Start;
+        return State::Start;
     } else if ch.is_whitespace() {
         tokens.push(Token::Symbol(current_stack.clone()));
         current_stack.clear();
-        return ParserState::Start;
+        return State::Start;
     } else {
-        panic!("Invalid character");
+        panic!("Tokenizer error");
     }
 }

@@ -1,64 +1,66 @@
-use bevy::prelude::*;
+use bevy::{input::mouse::MouseWheel, prelude::*};
 
 use crate::{
-    background::BackgroundEvent,
-    domain::{Command, GameState},
-    text::TextEvent,
+    domain::{GameState, Screen},
+    ui::{BackgroundDisplayEvent, TextDisplayEvent},
 };
-
-pub struct ForwardEvent;
-pub struct BackwardsEvent;
 
 pub struct DirectorPlugin;
 impl Plugin for DirectorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<ForwardEvent>()
-            .add_event::<BackwardsEvent>()
-            .add_system(director);
+        app.add_system(forward).add_system(backwards);
     }
 }
 
-fn director(
-    mut ev_forward: EventReader<ForwardEvent>,
-    mut ev_backwards: EventReader<BackwardsEvent>,
-    mut ev_text: EventWriter<TextEvent>,
-    mut ev_background: EventWriter<BackgroundEvent>,
+fn forward(
+    buttons: Res<Input<MouseButton>>,
+    keys: Res<Input<KeyCode>>,
     mut game_state: ResMut<GameState>,
+    mut ev_scroll: EventReader<MouseWheel>,
+    mut ev_text_display: EventWriter<TextDisplayEvent>,
+    mut ev_background_display: EventWriter<BackgroundDisplayEvent>,
 ) {
-    if game_state.commands.len() == 0 {
-        return;
-    }
-
-    for _ in ev_forward.iter() {
-        if game_state.current_command < game_state.commands.len() - 1 {
-            game_state.current_command += 1;
-            send_command(&mut ev_text, &mut ev_background, &game_state)
+    let mut scrolled = false;
+    for ev in ev_scroll.iter() {
+        if ev.y < 0. {
+            scrolled = true;
         }
     }
 
-    for _ in ev_backwards.iter() {
-        if game_state.current_command > 0 {
-            game_state.current_command -= 1;
-            send_command(&mut ev_text, &mut ev_background, &game_state)
+    if buttons.just_pressed(MouseButton::Left) || keys.just_pressed(KeyCode::Space) || scrolled {
+        game_state.forward();
+        if let Some(screen) = game_state.current_screen() {
+            update_screen(&screen, &mut ev_text_display, &mut ev_background_display)
         }
     }
 }
 
-fn send_command(
-    ev_text: &mut EventWriter<TextEvent>,
-    ev_background: &mut EventWriter<BackgroundEvent>,
-    game_state: &ResMut<GameState>,
+fn backwards(
+    mut game_state: ResMut<GameState>,
+    mut ev_scroll: EventReader<MouseWheel>,
+    mut ev_text_display: EventWriter<TextDisplayEvent>,
+    mut ev_background_display: EventWriter<BackgroundDisplayEvent>,
 ) {
-    if let Some(command) = game_state.commands.get(game_state.current_command) {
-        match command {
-            Command::NoOp => {}
-            Command::Text { speaker, text } => ev_text.send(TextEvent {
-                speaker: speaker.clone(),
-                text: text.clone(),
-            }),
-            Command::DisplayBackground { image } => ev_background.send(BackgroundEvent {
-                image: image.clone(),
-            }),
+    for ev in ev_scroll.iter() {
+        if ev.y > 0. {
+            game_state.backwards();
+            if let Some(screen) = game_state.current_screen() {
+                update_screen(&screen, &mut ev_text_display, &mut ev_background_display)
+            }
         }
     }
+}
+
+fn update_screen(
+    screen: &Screen,
+    ev_text_display: &mut EventWriter<TextDisplayEvent>,
+    ev_background_display: &mut EventWriter<BackgroundDisplayEvent>,
+) {
+    ev_text_display.send(TextDisplayEvent {
+        speaker: screen.speaker.clone(),
+        text: screen.text.clone(),
+    });
+    ev_background_display.send(BackgroundDisplayEvent {
+        image_path: screen.background.clone(),
+    });
 }
