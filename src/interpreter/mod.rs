@@ -1,10 +1,12 @@
-mod syntax_processor;
+mod parser;
 mod tokenizer;
 
-use crate::domain::Command;
+use std::collections::VecDeque;
 
-pub fn process(text: &String) -> Vec<Command> {
-    let tokens = tokenizer::parse(text);
-    let commands = syntax_processor::parse_commands(tokens);
+pub use self::parser::Command;
+
+pub fn parse_text(text: &String) -> VecDeque<Command> {
+    let tokens = tokenizer::generate_tokens(text);
+    let commands = parser::generate_commands(&tokens);
     return commands;
 }

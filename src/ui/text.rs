@@ -6,7 +6,7 @@ pub struct Speaker;
 #[derive(Component)]
 pub struct Dialog;
 
-pub struct TextEvent {
+pub struct TextDisplayEvent {
     pub speaker: Option<String>,
     pub text: String,
 }
@@ -14,7 +14,7 @@ pub struct TextEvent {
 pub struct TextPlugin;
 impl Plugin for TextPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<TextEvent>()
+        app.add_event::<TextDisplayEvent>()
             .add_startup_system(setup)
             .add_system(speaker_text)
             .add_system(dialog_text);
@@ -69,8 +69,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(Dialog);
 }
 
-fn speaker_text(mut ev_text: EventReader<TextEvent>, mut query: Query<&mut Text, With<Speaker>>) {
-    for text_event in ev_text.iter() {
+fn speaker_text(
+    mut ev_text_display: EventReader<TextDisplayEvent>,
+    mut query: Query<&mut Text, With<Speaker>>,
+) {
+    for text_event in ev_text_display.iter() {
         for mut text_display in &mut query {
             if let Some(speaker) = text_event.speaker.clone() {
                 text_display.sections[0].value = speaker.clone();
@@ -81,8 +84,11 @@ fn speaker_text(mut ev_text: EventReader<TextEvent>, mut query: Query<&mut Text,
     }
 }
 
-fn dialog_text(mut ev_text: EventReader<TextEvent>, mut query: Query<&mut Text, With<Dialog>>) {
-    for text_event in ev_text.iter() {
+fn dialog_text(
+    mut ev_text_display: EventReader<TextDisplayEvent>,
+    mut query: Query<&mut Text, With<Dialog>>,
+) {
+    for text_event in ev_text_display.iter() {
         for mut text_display in &mut query {
             text_display.sections[0].value = text_event.text.clone();
         }
