@@ -61,10 +61,13 @@ impl GameState {
     }
 
     pub fn backwards(&mut self) {
-        if let Some(history_event) = self.history.last() {
+        if self.history.len() == 1 {
+            return;
+        }
+
+        if let Some(history_event) = self.history.pop() {
             return {
-                self.commands.insert(0, history_event.0.clone());
-                self.history.pop();
+                self.commands.push_front(history_event.0.clone());
             };
         }
     }
