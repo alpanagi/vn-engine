@@ -52,7 +52,8 @@ fn load_script(asset_server: Res<AssetServer>, mut game_state: ResMut<GameState>
 fn process_script(mut game_state: ResMut<GameState>, scripts: Res<Assets<Script>>) {
     if let Some(script_handle) = game_state.unprocessed_scripts.pop() {
         if let Some(script) = scripts.get(&script_handle) {
-            let mut commands = parse_text(&script.content);
+            let (game_data, mut commands) = parse_text(&script.content);
+            game_state.data = game_data;
             game_state.commands.append(&mut commands);
         }
     }

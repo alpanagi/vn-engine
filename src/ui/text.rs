@@ -8,6 +8,7 @@ pub struct Dialog;
 
 pub struct TextDisplayEvent {
     pub speaker: Option<String>,
+    pub speaker_color: Color,
     pub text: String,
 }
 
@@ -77,6 +78,7 @@ fn speaker_text(
         for mut text_display in &mut query {
             if let Some(speaker) = text_event.speaker.clone() {
                 text_display.sections[0].value = speaker.clone();
+                text_display.sections[0].style.color = text_event.speaker_color;
             } else {
                 text_display.sections[0].value = "".to_string();
             }

@@ -1,5 +1,12 @@
+narrator = { color: red, name: "Narrator" }
+whisper = { color: blue }
+
+
 "This is an example text"
 
 background hoover.jpg
-"Narrator" "This is another example text"
-"Stranger" "So many example texts!"
+narrator "This is another example with a predefined character"
+"narrator" "This one ignores character data"
+Stranger "So many example texts!"
+
+whisper "When you have to tell a secret"

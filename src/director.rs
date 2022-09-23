@@ -58,6 +58,7 @@ fn update_screen(
 ) {
     ev_text_display.send(TextDisplayEvent {
         speaker: screen.speaker.clone(),
+        speaker_color: screen.speaker_color,
         text: screen.text.clone(),
     });
     ev_background_display.send(BackgroundDisplayEvent {
