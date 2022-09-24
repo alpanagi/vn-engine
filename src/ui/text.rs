@@ -122,5 +122,5 @@ fn text_background(mut query: Query<&mut Transform, With<TextBackground>>, windo
 
     let mut transform = query.single_mut();
     transform.scale = Vec3::new(window.width(), 160., 1.);
-    transform.translation = Vec3::new(0., -window.height() / 2. + 80., 0.);
+    transform.translation = Vec3::new(0., -window.height() / 2. + 80., 0.1);
 }
