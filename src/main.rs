@@ -22,6 +22,7 @@ fn main() {
             title: "VN Engine".to_string(),
             width: 800.,
             height: 600.,
+            resizable: false,
             ..default()
         })
         .insert_resource(ClearColor(Color::BLACK))
